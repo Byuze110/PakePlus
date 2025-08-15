@@ -1,32 +1,609 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="stylesheet" href="styles.css" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PakePlus App</title>
-        <script type="module" src="/main.js" defer></script>
-    </head>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>征兵纸笔测试模拟 - 此程序由Baiyuze编写禁止商用！！！</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            color: white;
+            text-align: center;
+            padding: 25px 20px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .start-screen, .game-screen, .result-screen {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .game-screen, .result-screen {
+            display: none;
+        }
+        
+        .instructions {
+            background-color: #f0f8ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .instructions h2 {
+            color: #4b6cb7;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ul {
+            text-align: left;
+            padding-left: 20px;
+            margin: 15px 0;
+        }
+        
+        .instructions li {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #4b6cb7;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .timer {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            padding: 10px 30px;
+            border-radius: 50px;
+            margin: 15px 0;
+        }
+        
+        .question-container {
+            margin: 30px 0;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .question {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .answer-input {
+            width: 120px;
+            height: 120px;
+            font-size: 4rem;
+            text-align: center;
+            border: 4px solid #4b6cb7;
+            border-radius: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .answer-input:focus {
+            border-color: #182848;
+            box-shadow: 0 5px 20px rgba(75, 108, 183, 0.4);
+        }
+        
+        .progress-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #e0e0e0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 30px 0;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin: 30px 0;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .result-title {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #4b6cb7;
+        }
+        
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(#4b6cb7 0%, #182848 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px auto;
+            position: relative;
+        }
+        
+        .score-inner {
+            width: 170px;
+            height: 170px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .score-text {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .score-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #182848;
+            line-height: 1;
+        }
+        
+        .score-percent {
+            font-size: 1.5rem;
+            color: #4b6cb7;
+            margin-top: 5px;
+        }
+        
+        .medal {
+            font-size: 4rem;
+            margin: 20px 0;
+        }
+        
+        .gold {
+            color: #ffd700;
+        }
+        
+        .silver {
+            color: #c0c0c0;
+        }
+        
+        .bronze {
+            color: #cd7f32;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .question {
+                font-size: 3rem;
+            }
+            
+            .answer-input {
+                width: 100px;
+                height: 100px;
+                font-size: 3rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-circle {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .score-inner {
+                width: 130px;
+                height: 130px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-calculator"></i> 征兵纸笔测试模拟</h1>
+            <p>此程序由Baiyuze编写禁止商用</p>
+        </div>
+        
+        <div class="content">
+            <div class="start-screen" id="startScreen">
+                <div class="instructions">
+                    <h2><i class="fas fa-info-circle"></i> 游戏规则</h2>
+                    <ul>
+                        <li>本游戏包含60道1到9以内的加法题</li>
+                        <li>你需要在<strong>2分钟</strong>内完成所有题目</li>
+                        <li>只需填写计算结果的<strong>个位数</strong></li>
+                        <li>每答对一题得1.67分，满分100分</li>
+                        <li>填写答案后自动跳转到下一题</li>
+                        <li>时间用完或完成所有题目后显示成绩</li>
+                    </ul>
+                    <p>准备好了吗？点击开始挑战吧！</p>
+                </div>
+                <button class="btn" id="startBtn">
+                    <i class="fas fa-play"></i> 开始挑战
+                </button>
+            </div>
+            
+            <div class="game-screen" id="gameScreen">
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="currentQuestion">1</div>
+                        <div class="stat-label">当前题数</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="correctCount">0</div>
+                        <div class="stat-label">答对题数</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="wrongCount">0</div>
+                        <div class="stat-label">答错题数</div>
+                    </div>
+                </div>
+                
+                <div class="timer" id="timer">02:00</div>
+                
+                <div class="question-container">
+                    <div class="question" id="question">3 + 5 = ?</div>
+                    <input type="number" class="answer-input" id="answerInput" min="0" max="9" autofocus>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+            
+            <div class="result-screen" id="resultScreen">
+                <div class="medal" id="medal">
+                    <i class="fas fa-medal gold"></i>
+                </div>
+                
+                <h2 style="color: #4b6cb7; margin-bottom: 20px;">挑战完成!</h2>
+                
+                <div class="score-circle">
+                    <div class="score-inner">
+                        <div class="score-text">得分</div>
+                        <div class="score-number" id="finalScore">100</div>
+                        <div class="score-percent" id="accuracy">100%</div>
+                    </div>
+                </div>
+                
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-title">总用时</div>
+                        <div class="result-value" id="timeUsed">02:00</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-title">答对题数</div>
+                        <div class="result-value" id="finalCorrect">60</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-title">答错题数</div>
+                        <div class="result-value" id="finalWrong">0</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-title">正确率</div>
+                        <div class="result-value" id="finalAccuracy">100%</div>
+                    </div>
+                </div>
+                
+                <button class="btn" id="restartBtn">
+                    <i class="fas fa-redo"></i> 再玩一次
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <body>
-        <main class="container">
-            <h1>Welcome to PakePlus</h1>
-            <form class="row" id="greet-form">
-                <input id="inputValue" placeholder="Enter a something..." />
-            </form>
-            <div class="resultBox">
-                <span>result: </span>
-                <span id="result"></span>
-            </div>
-            <div class="invokeBox">
-                <button id="openUrl">open_url_browser</button>
-                <button id="openUrlNew">open_url_new</button>
-                <button id="runCommand">run_command</button>
-                <button id="downloadFile">download_file</button>
-                <button id="getExeDir">get_exe_dir</button>
-                <button id="getEnvVar">get_env_var</button>
-                <button id="findPort">find_port</button>
-            </div>
-        </main>
-    </body>
+    <script>
+        // 游戏变量
+        const totalQuestions = 60;
+        const timeLimit = 120; // 2分钟
+        let currentQuestion = 1;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let timer;
+        let timeLeft = timeLimit;
+        let startTime;
+        let questions = [];
+        
+        // DOM元素
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const currentQuestionEl = document.getElementById('currentQuestion');
+        const correctCountEl = document.getElementById('correctCount');
+        const wrongCountEl = document.getElementById('wrongCount');
+        const timerEl = document.getElementById('timer');
+        const questionEl = document.getElementById('question');
+        const answerInput = document.getElementById('answerInput');
+        const progressBar = document.getElementById('progressBar');
+        const finalScore = document.getElementById('finalScore');
+        const finalCorrect = document.getElementById('finalCorrect');
+        const finalWrong = document.getElementById('finalWrong');
+        const finalAccuracy = document.getElementById('finalAccuracy');
+        const timeUsed = document.getElementById('timeUsed');
+        const medal = document.getElementById('medal');
+        
+        // 生成随机加法题目
+        function generateQuestions() {
+            questions = [];
+            for (let i = 0; i < totalQuestions; i++) {
+                const a = Math.floor(Math.random() * 9) + 1;
+                const b = Math.floor(Math.random() * 9) + 1;
+                const sum = a + b;
+                const answer = sum % 10; // 只取个位数
+                questions.push({ a, b, answer });
+            }
+        }
+        
+        // 显示当前题目
+        function showQuestion() {
+            if (currentQuestion > totalQuestions) {
+                endGame();
+                return;
+            }
+            
+            const q = questions[currentQuestion - 1];
+            questionEl.textContent = `${q.a} + ${q.b} = ?`;
+            answerInput.value = '';
+            answerInput.focus();
+            
+            // 更新进度
+            currentQuestionEl.textContent = currentQuestion;
+            const progress = (currentQuestion / totalQuestions) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // 开始游戏
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameScreen.style.display = 'flex';
+            resultScreen.style.display = 'none';
+            
+            // 初始化变量
+            currentQuestion = 1;
+            correctCount = 0;
+            wrongCount = 0;
+            timeLeft = timeLimit;
+            
+            // 生成题目
+            generateQuestions();
+            
+            // 显示第一题
+            showQuestion();
+            
+            // 更新统计
+            correctCountEl.textContent = correctCount;
+            wrongCountEl.textContent = wrongCount;
+            
+            // 开始计时
+            startTime = new Date();
+            updateTimer();
+            timer = setInterval(updateTimer, 1000);
+        }
+        
+        // 更新计时器
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                endGame();
+                return;
+            }
+            
+            timeLeft--;
+        }
+        
+        // 检查答案
+        function checkAnswer() {
+            const userAnswer = parseInt(answerInput.value);
+            if (isNaN(userAnswer)) return;
+            
+            const q = questions[currentQuestion - 1];
+            if (userAnswer === q.answer) {
+                correctCount++;
+                correctCountEl.textContent = correctCount;
+            } else {
+                wrongCount++;
+                wrongCountEl.textContent = wrongCount;
+            }
+            
+            // 下一题
+            currentQuestion++;
+            showQuestion();
+        }
+        
+        // 结束游戏
+        function endGame() {
+            clearInterval(timer);
+            
+            // 计算用时
+            const endTime = new Date();
+            const timeTaken = Math.floor((endTime - startTime) / 1000);
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = timeTaken % 60;
+            const timeTakenStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // 计算分数和正确率
+            const accuracy = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+            const score = Math.round((correctCount / totalQuestions) * 100);
+            
+            // 更新结果页面
+            finalScore.textContent = score;
+            finalCorrect.textContent = correctCount;
+            finalWrong.textContent = wrongCount;
+            finalAccuracy.textContent = `${accuracy}%`;
+            timeUsed.textContent = timeTakenStr;
+            
+            // 根据分数显示不同的奖牌
+            let medalIcon;
+            if (score >= 90) {
+                medalIcon = '<i class="fas fa-medal gold"></i>';
+            } else if (score >= 70) {
+                medalIcon = '<i class="fas fa-medal silver"></i>';
+            } else if (score >= 50) {
+                medalIcon = '<i class="fas fa-medal bronze"></i>';
+            } else {
+                medalIcon = '<i class="fas fa-star" style="color:#4b6cb7"></i>';
+            }
+            medal.innerHTML = medalIcon;
+            
+            // 显示结果页面
+            gameScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+        }
+        
+        // 事件监听
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+        
+        answerInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+                checkAnswer();
+            }
+        });
+        
+        // 限制只能输入0-9
+        answerInput.addEventListener('keydown', function(e) {
+            if (e.key === 'e' || e.key === '+' || e.key === '-' || e.key === '.') {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
 </html>
